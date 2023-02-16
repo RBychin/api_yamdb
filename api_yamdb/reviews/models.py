@@ -5,17 +5,11 @@ from django.db import models
 User = get_user_model()
 
 
-class Title(models.Model):
-    name = models.CharField(max_length=150, blank=False)
-
-    def __str__(self):
-        return self.name
-
-
 class CreatedModel(models.Model):
     """Абстрактная модель. Добавляет в модель дату создания.
     Упорядочивает записи по дате создания от новой к старой."""
     text = models.TextField(
+        max_length=200,
         verbose_name='Текст сообщения',
         blank=False
     )
@@ -52,7 +46,17 @@ class Review(CreatedModel):
     )
 
     def __str__(self):
-        return self.text
+        return self.text[:30]
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=['author', 'title'],
+                name='unique_author_title'
+            )
+        ]
+        verbose_name = "Отзыв"
+        verbose_name_plural = "Отзывы"
 
 
 class Comment(CreatedModel):
@@ -69,4 +73,8 @@ class Comment(CreatedModel):
     )
 
     def __str__(self):
-        return self.text
+        return self.text[:30]
+
+    class Meta:
+        verbose_name = "Комментарий"
+        verbose_name_plural = "Комментарии"
