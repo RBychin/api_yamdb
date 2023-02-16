@@ -24,6 +24,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework',
     'users.apps.UsersConfig',  # возможны конфликты
 ]
 
@@ -110,3 +111,12 @@ AUTH_USER_MODEL = 'users.User'
 
 
 ROLE__MAX_LEN = 16
+
+# Reviews/Comments constants
+ALLOWED_ROLES = ['moderator', 'admin']
+
+REST_FRAMEWORK = {
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination'
+                                '.PageNumberPagination',
+    'PAGE_SIZE': 5,
+}
