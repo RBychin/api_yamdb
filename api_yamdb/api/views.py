@@ -4,6 +4,7 @@ from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.viewsets import ModelViewSet
 
 from reviews.models import Review
+from reviews.models import Title
 from .permissions import IsAuthorStaffOrReadOnly
 from .serializers import ReviewSerializer, CommentSerializer
 
