@@ -59,17 +59,13 @@ class GenreSerializer(serializers.ModelSerializer):
         exclude = ('id',)
 
 
-class RatingSerializer(serializers.ModelSerializer):
-    pass
-
-
 class TitleSerializer(serializers.ModelSerializer):
     genre = serializers.SlugRelatedField(
         queryset=Genre.objects.all(),
         slug_field='slug',
         many=True
     )
-    rating = RatingSerializer(required=False, many=False)
+    rating = serializers.IntegerField(read_only=True)
     category = serializers.SlugRelatedField(
         queryset=Category.objects.all(),
         slug_field='slug',
