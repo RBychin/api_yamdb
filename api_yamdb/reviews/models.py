@@ -24,6 +24,7 @@ class Title(BaseModel):
         verbose_name='Категория',
         related_name='titles'
     )
+    genre = models.ManyToManyField('Genre', through='TitleGenres')
 
     def __str__(self):
         return self.name[:30]
@@ -53,7 +54,7 @@ class TitleGenres(BaseModel):
 
 class Genre(BaseModel):
     name = models.CharField('Название жанра', max_length=256)
-    slug = models.CharField('Краткое имя жанра', max_length=50)
+    slug = models.SlugField('Краткое имя жанра', max_length=50)
 
     def __str__(self):
         return self.name[:30]
@@ -65,7 +66,7 @@ class Genre(BaseModel):
 
 class Category(BaseModel):
     name = models.CharField('Название категории', max_length=256)
-    slug = models.CharField('Краткое имя категории', max_length=50)
+    slug = models.SlugField('Краткое имя категории', max_length=50)
 
     def __str__(self):
         return self.name[:30]
@@ -112,7 +113,7 @@ class Review(CreatedModel):
             MaxValueValidator(10),
             MinValueValidator(1),
         ],
-        blank=False
+        blank=False,
     )
 
     def __str__(self):
