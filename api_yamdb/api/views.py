@@ -1,4 +1,5 @@
 from django.contrib.auth import get_user_model
+from django.db.models import Avg
 from django.shortcuts import get_object_or_404
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.viewsets import ModelViewSet
@@ -49,7 +50,12 @@ class CommentViewSet(ModelViewSet):
 
 class TitleViewSet(ModelViewSet):
     serializer_class = TitleSerializer
-    queryset = Title.objects.all()
+    queryset = Title.objects.annotate(
+        rating=Avg('reviews__score')
+    ).all()
+
+
+
 
 
 class CategoryViewSet(ModelViewSet):

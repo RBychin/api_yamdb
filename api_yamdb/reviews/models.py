@@ -5,7 +5,14 @@ from django.db import models
 User = get_user_model()
 
 
-class Title(models.Model):
+class BaseModel(models.Model):
+    objects = models.Manager()
+
+    class Meta:
+        abstract = True
+
+
+class Title(BaseModel):
     name = models.CharField('Название произведения', max_length=256)
     year = models.PositiveSmallIntegerField('Дата создания', blank=False,
                                             null=False)
@@ -27,7 +34,7 @@ class Title(models.Model):
         verbose_name_plural = "Произведения"
 
 
-class TitleGenres(models.Model):
+class TitleGenres(BaseModel):
     title = models.ForeignKey(
         'Title',
         on_delete=models.CASCADE,
@@ -45,7 +52,7 @@ class TitleGenres(models.Model):
         return f'{self.title}, {self.genre}'
 
 
-class Genre(models.Model):
+class Genre(BaseModel):
     name = models.CharField('Название жанра', max_length=256)
     slug = models.SlugField('Краткое имя жанра', max_length=50)
 
@@ -57,7 +64,7 @@ class Genre(models.Model):
         verbose_name_plural = "Жанры"
 
 
-class Category(models.Model):
+class Category(BaseModel):
     name = models.CharField('Название категории', max_length=256)
     slug = models.SlugField('Краткое имя категории', max_length=50)
 
@@ -69,7 +76,7 @@ class Category(models.Model):
         verbose_name_plural = "Категории"
 
 
-class CreatedModel(models.Model):
+class CreatedModel(BaseModel):
     """Абстрактная модель. Добавляет в модель дату создания.
     Упорядочивает записи по дате создания от новой к старой."""
     text = models.TextField(

@@ -50,6 +50,7 @@ class CategoryAdmin(admin.ModelAdmin):
     list_editable = ('slug',)
     search_fields = ('name',)
 
+
 admin.site.register(TitleGenres)
 
 
