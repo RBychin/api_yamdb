@@ -6,7 +6,7 @@ from rest_framework.viewsets import ModelViewSet
 from reviews.models import Review
 from reviews.models import Title
 from .permissions import IsAuthorStaffOrReadOnly
-from .serializers import ReviewSerializer, CommentSerializer
+from .serializers import ReviewSerializer, CommentSerializer, TitleSerializer
 
 
 User = get_user_model()
@@ -40,3 +40,9 @@ class CommentViewSet(ModelViewSet):
             author=self.request.user,
             review=get_object_or_404(Review, pk=self.kwargs.get('review_id'))
         )
+
+
+class TitleViewSet(ModelViewSet):
+    serializer_class = TitleSerializer
+    queryset = Title.objects.all()
+    pagination_class = None
