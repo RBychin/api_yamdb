@@ -114,32 +114,32 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         prefix = options.get('prefix')
         if prefix:
-            with open(f'{PATH}/{prefix}.csv') as r_file:
-                reader = csv.reader(r_file, delimiter=',')
-                next(reader)
-                if get_file(prefix, FILES):
-                    if prefix in FILE_FUNC:
-                        try:
-                            FILE_FUNC.get(prefix)[0](reader)
-                        except Exception as er:
-                            print(er)
-                        else:
-                            return 'Загрузка завершена успешно.'
-                else:
-                    return (f'Файл "{prefix}" не найден.'
-                            f'\n Выберете файл из списка: '
-                            f'{", ".join(FILES).replace(".csv", "")} '
-                            f'\nИли воспользуйтесь командой manage.py '
-                            f'load_data без префикса, для обработки всех '
-                            f'файлов в директории data')
-        else:
-            for file in FILE_FUNC.values():
-                with open(f'{PATH}{file[1]}') as r_file:
+            try:
+                with open(f'{PATH}/{prefix}.csv') as r_file:
                     reader = csv.reader(r_file, delimiter=',')
                     next(reader)
-                    try:
-                        file[0](reader)
-                    except django.db.utils.IntegrityError as er:
-                        print(f'Ошибка: {er}')
+                    if get_file(prefix, FILES):
+                        if prefix in FILE_FUNC:
+                                FILE_FUNC.get(prefix)[0](reader)
                     else:
-                        return 'Загрузка завершена успешно.'
+                        return (f'Файл "{prefix}" не найден.'
+                                f'\n Выберете файл из списка: '
+                                f'{", ".join(FILES).replace(".csv", "")} '
+                                f'\nИли воспользуйтесь командой manage.py '
+                                f'load_data без префикса, для обработки всех '
+                                f'файлов в директории data')
+            except Exception as er:
+                print(er)
+            else:
+                return '--Загрузка завершена успешно.--'
+        else:
+            try:
+                for file in FILE_FUNC.values():
+                    with open(f'{PATH}{file[1]}') as r_file:
+                        reader = csv.reader(r_file, delimiter=',')
+                        next(reader)
+                        file[0](reader)
+            except django.db.utils.IntegrityError as er:
+                print(f'Ошибка: {er}')
+            else:
+                return '--Загрузка завершена успешно.--'
