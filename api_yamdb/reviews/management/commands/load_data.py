@@ -5,7 +5,13 @@ import django
 from django.core.management.base import BaseCommand
 
 from api_yamdb.settings import BASE_DIR
-from reviews.models import Title, Review, Comment, Category, User, Genre
+from reviews.models import (Title,
+                            TitleGenres,
+                            Review,
+                            Comment,
+                            Category,
+                            User,
+                            Genre)
 
 PATH = os.path.join(BASE_DIR, 'static/data/')
 FILES = os.listdir(PATH)
@@ -94,11 +100,23 @@ def get_genre(reader):
     print('Genre записи успешно добавлены.')
 
 
+def get_genre_title(reader):
+    TitleGenres.objects.bulk_create(
+        [TitleGenres(
+            id=row[0],
+            title_id=row[1],
+            genre_id=row[2]
+        ) for row in reader]
+    )
+    print('TitleGenres записи успешно добавлены.')
+
+
 FILE_FUNC = {
                 'users': [get_users, 'users.csv'],
                 'genre': [get_genre, 'genre.csv'],
                 'category': [get_category, 'category.csv'],
                 'titles': [get_titles, 'titles.csv'],
+                'genre_title': [get_genre_title, 'genre_title.csv'],
                 'review': [get_review, 'review.csv'],
                 'comments': [get_comments, 'comments.csv']
             }
