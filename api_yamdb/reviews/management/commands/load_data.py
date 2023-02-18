@@ -112,14 +112,14 @@ def get_genre_title(reader):
 
 
 FILE_FUNC = {
-                'users': [get_users, 'users.csv'],
-                'genre': [get_genre, 'genre.csv'],
-                'category': [get_category, 'category.csv'],
-                'titles': [get_titles, 'titles.csv'],
-                'genre_title': [get_genre_title, 'genre_title.csv'],
-                'review': [get_review, 'review.csv'],
-                'comments': [get_comments, 'comments.csv']
-            }
+    'users': [get_users, 'users.csv'],
+    'genre': [get_genre, 'genre.csv'],
+    'category': [get_category, 'category.csv'],
+    'titles': [get_titles, 'titles.csv'],
+    'genre_title': [get_genre_title, 'genre_title.csv'],
+    'review': [get_review, 'review.csv'],
+    'comments': [get_comments, 'comments.csv']
+}
 
 
 class Command(BaseCommand):
@@ -133,12 +133,11 @@ class Command(BaseCommand):
         prefix = options.get('prefix')
         if prefix:
             try:
-                with open(f'{PATH}/{prefix}.csv') as r_file:
+                with open(f'{PATH}/{prefix}.csv', 'r', encoding='utf-8') as r_file:
                     reader = csv.reader(r_file, delimiter=',')
                     next(reader)
-                    if get_file(prefix, FILES):
-                        if prefix in FILE_FUNC:
-                                FILE_FUNC.get(prefix)[0](reader)
+                    if get_file(prefix, FILES) and prefix in FILE_FUNC:
+                        FILE_FUNC.get(prefix)[0](reader)
                     else:
                         return (f'Файл "{prefix}" не найден.'
                                 f'\n Выберете файл из списка: '
