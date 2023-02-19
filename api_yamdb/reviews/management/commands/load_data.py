@@ -45,10 +45,6 @@ class Command(BaseCommand):
             'в sqlite базу проекта Django, перед использованием,'
             'необходимо описать модели и сделать миграции.')
 
-    def add_arguments(self, parser):
-        parser.add_argument('-p', '--prefix', type=str,
-                            help='Название таблицы.', )
-
     def handle(self, *args, **options):
         for model, file in FILE_FUNC.values():
             try:
