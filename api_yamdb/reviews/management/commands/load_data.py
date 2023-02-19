@@ -3,6 +3,7 @@ import os
 
 import django
 from django.core.management.base import BaseCommand
+from django.db import Error, DatabaseError, IntegrityError
 
 from api_yamdb.settings import BASE_DIR
 from reviews.models import (Title,
@@ -33,7 +34,6 @@ def get_titles(reader):
             category_id=row[3]
         ) for row in reader]
     )
-    print('Title записи успешно добавлены.')
 
 
 def get_category(reader):
@@ -44,7 +44,6 @@ def get_category(reader):
             slug=row[2]
         ) for row in reader]
     )
-    print('Category записи успешно добавлены.')
 
 
 def get_users(reader):
@@ -59,7 +58,6 @@ def get_users(reader):
             last_name=row[6]
         ) for row in reader]
     )
-    print('Users записи успешно добавлены.')
 
 
 def get_review(reader):
@@ -73,7 +71,6 @@ def get_review(reader):
             pub_date=row[5]
         ) for row in reader]
     )
-    print('Review записи успешно добавлены.')
 
 
 def get_comments(reader):
@@ -86,7 +83,6 @@ def get_comments(reader):
             pub_date=row[4]
         ) for row in reader]
     )
-    print('Comment записи успешно добавлены.')
 
 
 def get_genre(reader):
@@ -97,7 +93,6 @@ def get_genre(reader):
             slug=row[2]
         ) for row in reader]
     )
-    print('Genre записи успешно добавлены.')
 
 
 def get_genre_title(reader):
@@ -108,7 +103,6 @@ def get_genre_title(reader):
             genre_id=row[2]
         ) for row in reader]
     )
-    print('TitleGenres записи успешно добавлены.')
 
 
 FILE_FUNC = {
@@ -132,10 +126,11 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         prefix = options.get('prefix')
         if prefix:
-            try:
-                with open(f'{PATH}/{prefix}.csv', 'r', encoding='utf-8') as r_file:
-                    reader = csv.reader(r_file, delimiter=',')
-                    next(reader)
+            with open(f'{PATH}/{prefix}.csv', 'r',
+                      encoding='utf-8') as r_file:
+                reader = csv.reader(r_file, delimiter=',')
+                next(reader)
+                try:
                     if get_file(prefix, FILES) and prefix in FILE_FUNC:
                         FILE_FUNC.get(prefix)[0](reader)
                     else:
@@ -145,18 +140,23 @@ class Command(BaseCommand):
                                 f'\nИли воспользуйтесь командой manage.py '
                                 f'load_data без префикса, для обработки всех '
                                 f'файлов в директории data')
-            except Exception as er:
-                print(er)
-            else:
-                return '--Загрузка завершена успешно.--'
-        else:
-            try:
-                for file in FILE_FUNC.values():
-                    with open(f'{PATH}{file[1]}') as r_file:
-                        reader = csv.reader(r_file, delimiter=',')
-                        next(reader)
-                        file[0](reader)
-            except django.db.utils.IntegrityError as er:
-                print(f'Ошибка: {er}')
-            else:
-                return '--Загрузка завершена успешно.--'
+                except DatabaseError as er:
+                    print(f'- Ошибка | {prefix}.csv | {er}.')
+                else:
+                    print(
+                        f'+ Успех | {prefix}.csv | '
+                        f'Записей добавлено: {reader.line_num}')
+        else:  # Без префикса
+            for func, file in FILE_FUNC.values():
+                with open(
+                        f'{PATH}{file}', 'r', encoding='utf-8'
+                ) as r_file:
+                    reader = csv.reader(r_file, delimiter=',')
+                    next(reader)
+                    try:
+                        func(reader)
+                    except DatabaseError as er:
+                        print(f'- Ошибка | {file} | {er}.')
+                    else:
+                        print(f'+ Успех | {file} | '
+                              f'Записей добавлено: {reader.line_num}')
