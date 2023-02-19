@@ -117,7 +117,9 @@ FILE_FUNC = {
 
 
 class Command(BaseCommand):
-    help = 'Загружает данные из csv таблицы в sqlite базу проекта.'
+    help = (f'Загружает данные из csv таблицы по адресу "{PATH}" '
+            'в sqlite базу проекта Django, перед использованием,'
+            'необходимо описать модели и сделать миграции.')
 
     def add_arguments(self, parser):
         parser.add_argument('-p', '--prefix', type=str,
@@ -140,12 +142,15 @@ class Command(BaseCommand):
                                 f'\nИли воспользуйтесь командой manage.py '
                                 f'load_data без префикса, для обработки всех '
                                 f'файлов в директории data')
+                except IntegrityError as er:
+                    print(f'- Ошибка | {prefix}.csv | '
+                          f'Проверьте уникальность дополняемых данных.')
                 except DatabaseError as er:
                     print(f'- Ошибка | {prefix}.csv | {er}.')
                 else:
                     print(
                         f'+ Успех | {prefix}.csv | '
-                        f'Записей добавлено: {reader.line_num}')
+                        f'Записей добавлено: {reader.line_num-1}')
         else:  # Без префикса
             for func, file in FILE_FUNC.values():
                 with open(
@@ -155,8 +160,11 @@ class Command(BaseCommand):
                     next(reader)
                     try:
                         func(reader)
+                    except IntegrityError as er:
+                        print(f'- Ошибка | {file} | '
+                              f'Проверьте уникальность дополняемых данных.')
                     except DatabaseError as er:
                         print(f'- Ошибка | {file} | {er}.')
                     else:
                         print(f'+ Успех | {file} | '
-                              f'Записей добавлено: {reader.line_num}')
+                              f'Записей добавлено: {reader.line_num-1}')
