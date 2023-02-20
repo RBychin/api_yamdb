@@ -20,9 +20,7 @@ class Title(BaseModel):
                                    null=True)
     category = models.ForeignKey(
         'Category',
-        blank=True,
-        null=True,
-        on_delete=models.SET_NULL,
+        on_delete=models.DO_NOTHING,
         verbose_name='Категория',
         related_name='titles'
     )
@@ -40,21 +38,15 @@ class TitleGenres(BaseModel):
     title = models.ForeignKey(
         'Title',
         on_delete=models.CASCADE,
-        verbose_name='Произведения',
+        verbose_name='Произведение',
         related_name='titles'
     )
     genre = models.ForeignKey(
         'Genre',
-        blank=True,
-        null=True,
-        on_delete=models.SET_NULL,
-        verbose_name='Жанры',
+        on_delete=models.DO_NOTHING,
+        verbose_name='Жанр',
         related_name='genres'
     )
-
-    class Meta:
-        verbose_name = "Произведение, жанр"
-        verbose_name_plural = "Жанры произведения"
 
     def __str__(self):
         return f'{self.title}, {self.genre}'
