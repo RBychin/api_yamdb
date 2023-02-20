@@ -6,7 +6,6 @@ from reviews.models import (
     Review,
     Comment,
     Title,
-    TitleGenres,
     Genre,
     Category
 )
@@ -66,11 +65,7 @@ class TitleSerializer(serializers.ModelSerializer):
         many=True
     )
     rating = serializers.IntegerField(read_only=True)
-    category = serializers.SlugRelatedField(
-        queryset=Category.objects.all(),
-        slug_field='slug',
-        many=False
-    )
+    category = CategorySerializer(many=False)
 
     class Meta:
         model = Title
