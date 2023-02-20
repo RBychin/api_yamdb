@@ -47,7 +47,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         for model, file in FILE_FUNC.values():
             try:
-                with open(f'{PATH + file}', 'r') as r_file:
+                with open(f'{PATH + file}', 'r', encoding='utf-8') as r_file:
                     reader = csv.DictReader(r_file, delimiter=',')
                     try:
                         create_obj(reader, model)
