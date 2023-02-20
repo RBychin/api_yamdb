@@ -17,12 +17,15 @@ ALLOWED_HOSTS = ['*']
 # Application definition
 
 INSTALLED_APPS = [
+    'api.apps.ApiConfig',
+    'reviews.apps.ReviewsConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework',
     'users.apps.UsersConfig',  # возможны конфликты
 ]
 
@@ -116,6 +119,9 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ],
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination'
+                                '.PageNumberPagination',
+    'PAGE_SIZE': 5,
 }
 
 SIMPLE_JWT = {
@@ -123,7 +129,13 @@ SIMPLE_JWT = {
     'AUTH_HEADER_TYPES': ('Bearer',),
 }
 
+
 CONF_CODE_RANGE_UPP_LIMIT = 9999
 CONF_CODE_MAX_LEN = 4
 ROLE_MAX_LEN = 16
 USERNAME_MAX_LEN = 150
+ROLE__MAX_LEN = 16
+
+# Reviews/Comments constants
+ALLOWED_ROLES = ['moderator', 'admin']
+
