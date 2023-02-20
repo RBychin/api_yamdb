@@ -6,7 +6,7 @@ from django.db import DatabaseError, IntegrityError
 
 from api_yamdb.settings import BASE_DIR
 from reviews.models import (Title,
-                            TitleGenres,
+                            #TitleGenres,
                             Review,
                             Comment,
                             Category,
@@ -22,7 +22,7 @@ FILE_FUNC = {
     'genre': [Genre, 'genre.csv'],
     'category': [Category, 'category.csv'],
     'titles': [Title, 'titles.csv'],
-    'genre_title': [TitleGenres, 'genre_title.csv'],
+    #'genre_title': [TitleGenres, 'genre_title.csv'],
     'review': [Review, 'review.csv'],
     'comments': [Comment, 'comments.csv']
 }

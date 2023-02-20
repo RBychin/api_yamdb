@@ -1,21 +1,6 @@
 from django.contrib import admin
 
-from .models import Review, Comment, Category, Title, Genre, TitleGenres
-
-
-class GenreObjectsInline(admin.TabularInline):
-    model = TitleGenres
-
-
-@admin.register(TitleGenres)
-class TitleGenresAdmin(admin.ModelAdmin):
-    list_display = (
-        'id',
-        'title',
-        'genre',
-    )
-    list_editable = ('genre',)
-    list_filter = ('genre',)
+from .models import Review, Comment, Category, Title, Genre
 
 
 @admin.register(Title)
@@ -34,7 +19,7 @@ class TitleAdmin(admin.ModelAdmin):
     list_editable = ('year',)
     search_fields = ('name',)
     list_filter = ('category',)
-    inlines = (GenreObjectsInline,)
+    filter_horizontal = ('genre',)
 
 
 @admin.register(Genre)

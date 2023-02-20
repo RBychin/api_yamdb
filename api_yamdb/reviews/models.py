@@ -12,54 +12,6 @@ class BaseModel(models.Model):
         abstract = True
 
 
-class Title(BaseModel):
-    name = models.CharField('Название произведения', max_length=256)
-    year = models.PositiveSmallIntegerField('Дата создания', blank=False,
-                                            null=False)
-    description = models.TextField('Описание', max_length=1000, blank=True,
-                                   null=True)
-    category = models.ForeignKey(
-        'Category',
-        blank=True,
-        null=True,
-        on_delete=models.SET_NULL,
-        verbose_name='Категория',
-        related_name='titles'
-    )
-    genre = models.ManyToManyField('Genre', through='TitleGenres')
-
-    def __str__(self):
-        return self.name[:30]
-
-    class Meta:
-        verbose_name = "Произведение"
-        verbose_name_plural = "Произведения"
-
-
-class TitleGenres(BaseModel):
-    title = models.ForeignKey(
-        'Title',
-        on_delete=models.CASCADE,
-        verbose_name='Произведения',
-        related_name='titles'
-    )
-    genre = models.ForeignKey(
-        'Genre',
-        blank=True,
-        null=True,
-        on_delete=models.SET_NULL,
-        verbose_name='Жанры',
-        related_name='genres'
-    )
-
-    class Meta:
-        verbose_name = "Произведение, жанр"
-        verbose_name_plural = "Жанры произведения"
-
-    def __str__(self):
-        return f'{self.title}, {self.genre}'
-
-
 class Genre(BaseModel):
     name = models.CharField('Название жанра', max_length=256)
     slug = models.SlugField('Краткое имя жанра', max_length=50)
@@ -82,6 +34,30 @@ class Category(BaseModel):
     class Meta:
         verbose_name = "Категория"
         verbose_name_plural = "Категории"
+
+
+class Title(BaseModel):
+    name = models.CharField('Название произведения', max_length=256)
+    year = models.PositiveSmallIntegerField('Дата создания', blank=False,
+                                            null=False)
+    description = models.TextField('Описание', max_length=1000, blank=True,
+                                   null=True)
+    category = models.ForeignKey(
+        'Category',
+        blank=True,
+        null=True,
+        on_delete=models.SET_NULL,
+        verbose_name='Категория',
+        related_name='titles'
+    )
+    genre = models.ManyToManyField(Genre)
+
+    def __str__(self):
+        return self.name[:30]
+
+    class Meta:
+        verbose_name = "Произведение"
+        verbose_name_plural = "Произведения"
 
 
 class CreatedModel(BaseModel):
