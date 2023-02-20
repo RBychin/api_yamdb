@@ -23,6 +23,13 @@ class ReviewViewSet(ModelViewSet):
     permission_classes = [IsAuthenticatedOrReadOnly,
                           IsAuthorStaffOrReadOnly]
 
+    def get_serializer_context(self):
+        context = super(ReviewViewSet, self).get_serializer_context()
+        context['title'] = get_object_or_404(
+            Title, pk=self.kwargs.get('title_id')
+        )
+        return context
+
     def get_queryset(self):
         title = get_object_or_404(Title, pk=self.kwargs.get('title_id'))
         return title.reviews.all()
@@ -53,9 +60,6 @@ class TitleViewSet(ModelViewSet):
     queryset = Title.objects.annotate(
         rating=Avg('reviews__score')
     ).all()
-
-
-
 
 
 class CategoryViewSet(ModelViewSet):

@@ -14,7 +14,6 @@ from reviews.models import (Title,
                             Genre)
 
 PATH = os.path.join(BASE_DIR, 'static/data/')
-FILES = os.listdir(PATH)
 
 
 FILE_FUNC = {
@@ -54,11 +53,13 @@ class Command(BaseCommand):
                         create_obj(reader, model)
                     except IntegrityError:
                         print(f'- Ошибка | {file} | '
-                              f'Проверьте уникальность полей.')
+                              f'Проверьте уникальность полей '
+                              f'модели "{str(model.__name__)}".')
                     except DatabaseError as er:
                         print(f'- Ошибка | {file} | {er}.')
                     else:
                         print(f'+ Успех | {file} | '
-                              f'Записей добавлено: {reader.line_num - 1}')
+                              f'Записей модели "{str(model.__name__)}" '
+                              f'добавлено: {reader.line_num - 1}')
             except FileNotFoundError:
                 print(f'- Ошибка | {file} | Файл не найден.')
