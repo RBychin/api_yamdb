@@ -136,6 +136,3 @@ ROLE_MAX_LEN = 16
 USERNAME_MAX_LEN = 150
 ROLE__MAX_LEN = 16
 
-# Reviews/Comments constants
-ALLOWED_ROLES = ['moderator', 'admin']
-
