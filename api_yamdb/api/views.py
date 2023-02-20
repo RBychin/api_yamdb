@@ -9,8 +9,8 @@ from .permissions import (IsAuthorOrReadOnly,
                           IsAdminOrReadOnly,
                           IsModeratorOrReadOnly)
 from .serializers import (
-    ReviewSerializer, 
-    CommentSerializer, 
+    ReviewSerializer,
+    CommentSerializer,
     TitleSerializer,
     GenreSerializer,
     CategorySerializer,
@@ -61,9 +61,6 @@ class TitleViewSet(ModelViewSet):
     queryset = Title.objects.annotate(
         rating=Avg('reviews__score')
     ).all()
-
-
-
 
 
 class CategoryViewSet(ModelViewSet):
