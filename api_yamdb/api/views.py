@@ -7,8 +7,8 @@ from rest_framework.viewsets import ModelViewSet
 from reviews.models import Review, Category, Title, Genre
 from .permissions import IsAuthorStaffOrReadOnly
 from .serializers import (
-    ReviewSerializer, 
-    CommentSerializer, 
+    ReviewSerializer,
+    CommentSerializer,
     TitleSerializer,
     GenreSerializer,
     CategorySerializer,
@@ -53,9 +53,6 @@ class TitleViewSet(ModelViewSet):
     queryset = Title.objects.annotate(
         rating=Avg('reviews__score')
     ).all()
-
-
-
 
 
 class CategoryViewSet(ModelViewSet):
