@@ -1,11 +1,13 @@
 from django.contrib.auth import get_user_model
 from django.db.models import Avg
 from django.shortcuts import get_object_or_404
+from rest_framework import filters
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.viewsets import ModelViewSet
 
+
 from reviews.models import Review, Category, Title, Genre
-from .permissions import IsAuthorStaffOrReadOnly
+from .permissions import IsAuthorStaffOrReadOnly, IsAdminOrReadOnly
 from .serializers import (
     ReviewSerializer,
     CommentSerializer,
@@ -53,13 +55,20 @@ class TitleViewSet(ModelViewSet):
     queryset = Title.objects.annotate(
         rating=Avg('reviews__score')
     ).all()
+    permission_classes = (IsAdminOrReadOnly,)
 
 
 class CategoryViewSet(ModelViewSet):
     serializer_class = CategorySerializer
     queryset = Category.objects.all()
+    permission_classes = (IsAdminOrReadOnly,)
+    filter_backends = (filters.SearchFilter,)
+    search_fields = ('slug',)
 
 
 class GenreViewSet(ModelViewSet):
     serializer_class = GenreSerializer
     queryset = Genre.objects.all()
+    permission_classes = (IsAdminOrReadOnly,)
+    filter_backends = (filters.SearchFilter,)
+    search_fields = ('slug',)

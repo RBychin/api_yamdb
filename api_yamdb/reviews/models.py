@@ -1,6 +1,11 @@
 from django.contrib.auth import get_user_model
-from django.core.validators import MaxValueValidator, MinValueValidator
+from django.core.validators import (
+    MaxValueValidator,
+    MinValueValidator,
+    RegexValidator
+)
 from django.db import models
+from django.core.exceptions import ValidationError
 
 User = get_user_model()
 
@@ -12,9 +17,12 @@ class BaseModel(models.Model):
         abstract = True
 
 
-class Genre(BaseModel):
-    name = models.CharField('Название жанра', max_length=256)
-    slug = models.SlugField('Краткое имя жанра', max_length=50)
+class Genre(models.Model):
+    name = models.CharField('Название жанра', max_length=256, unique=True)
+    slug = models.SlugField('Краткое имя жанра',
+                            max_length=50,
+                            unique=True,
+                            validators=[RegexValidator])
 
     def __str__(self):
         return self.name[:30]
@@ -24,9 +32,15 @@ class Genre(BaseModel):
         verbose_name_plural = "Жанры"
 
 
-class Category(BaseModel):
-    name = models.CharField('Название категории', max_length=256)
-    slug = models.SlugField('Краткое имя категории', max_length=50)
+class Category(models.Model):
+    name = models.CharField('Название категории',
+                            max_length=256,
+                            unique=True,
+                            validators=[RegexValidator])
+    slug = models.SlugField('Краткое имя категории',
+                            max_length=50,
+                            unique=True,
+                            validators=[RegexValidator])
 
     def __str__(self):
         return self.name[:30]
@@ -37,7 +51,9 @@ class Category(BaseModel):
 
 
 class Title(BaseModel):
-    name = models.CharField('Название произведения', max_length=256)
+    name = models.CharField('Название произведения',
+                            max_length=256,
+                            validators=[RegexValidator])
     year = models.PositiveSmallIntegerField('Дата создания', blank=False,
                                             null=False)
     description = models.TextField('Описание', max_length=1000, blank=True,
