@@ -15,7 +15,7 @@ class TitleAdmin(admin.ModelAdmin):
     list_display_links = (
         'name',
     )
-    empty_value_display = '-none-'
+    empty_value_display = '-пусто-'
     list_editable = ('year',)
     search_fields = ('name',)
     list_filter = ('category',)
@@ -32,6 +32,7 @@ class GenreAdmin(admin.ModelAdmin):
     list_display_links = (
         'name',
     )
+    empty_value_display = '-пусто-'
     list_editable = ('slug',)
     search_fields = ('name',)
 
@@ -46,9 +47,12 @@ class CategoryAdmin(admin.ModelAdmin):
     list_display_links = (
         'name',
     )
+    empty_value_display = '-none-'
     list_editable = ('slug',)
-    list_filter = ('slug',)
     search_fields = ('name',)
+
+
+admin.site.register(TitleGenres)
 
 
 @admin.register(Review)

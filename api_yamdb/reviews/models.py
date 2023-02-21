@@ -5,7 +5,7 @@ from django.core.validators import (
     RegexValidator
 )
 from django.db import models
-from django.core.exceptions import ValidationError
+
 
 User = get_user_model()
 
@@ -60,9 +60,7 @@ class Title(BaseModel):
                                    null=True)
     category = models.ForeignKey(
         'Category',
-        blank=True,
-        null=True,
-        on_delete=models.SET_NULL,
+        on_delete=models.DO_NOTHING,
         verbose_name='Категория',
         related_name='titles'
     )

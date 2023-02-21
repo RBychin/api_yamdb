@@ -6,6 +6,7 @@ from reviews.models import (
     Review,
     Comment,
     Title,
+    TitleGenres,
     Genre,
     Category
 )
@@ -24,13 +25,11 @@ class ReviewSerializer(serializers.ModelSerializer):
         model = Review
 
     def validate(self, data):
-        user = self.context['request'].user
-        title = get_object_or_404(
-            Title, pk=self.context['view'].kwargs.get('title_id')
-        )
+        user, title = (self.context.get('request').user,
+                       self.context.get('title'))
         if Review.objects.filter(title=title, author=user).exists():
             raise serializers.ValidationError(
-                'Вы уже оставили отзыв на это произведение'
+                'Вы уже оставили отзыв на это произведение.'
             )
         return data
 
@@ -65,7 +64,11 @@ class TitleSerializer(serializers.ModelSerializer):
         many=True
     )
     rating = serializers.IntegerField(read_only=True)
-    category = CategorySerializer(many=False)
+    category = serializers.SlugRelatedField(
+        queryset=Category.objects.all(),
+        slug_field='slug',
+        many=False
+    )
 
     class Meta:
         model = Title
