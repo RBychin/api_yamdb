@@ -1,6 +1,7 @@
 from rest_framework import permissions
 
 
+# Соблюдаю принципы SOLID, надеюсь не переборщил.
 class IsAuthorOrReadOnly(permissions.BasePermission):
 
     def has_object_permission(self, request, view, obj):
