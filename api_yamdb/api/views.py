@@ -5,7 +5,9 @@ from rest_framework import filters
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.viewsets import ModelViewSet
 from rest_framework import mixins, viewsets
+from django_filters.rest_framework import DjangoFilterBackend
 
+from .filters import CustomFilter
 from reviews.models import Review, Category, Title, Genre
 from .permissions import (IsAuthorOrReadOnly,
                           IsAdminOrReadOnly,
@@ -71,8 +73,8 @@ class TitleViewSet(ModelViewSet):
         rating=Avg('reviews__score')
     ).all()
     permission_classes = (IsAdminOrReadOnly,)
-    filter_backends = (filters.SearchFilter,)
-    search_fields = ('genre__slug',)
+    filter_backends = (DjangoFilterBackend,)
+    filterset_class = CustomFilter
 
     def get_serializer_class(self):
         if self.action in ['list', 'retrieve']:

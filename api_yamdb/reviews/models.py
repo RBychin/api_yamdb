@@ -1,3 +1,4 @@
+import datetime as dt
 from django.contrib.auth import get_user_model
 from django.core.validators import (
     MaxValueValidator,
@@ -54,8 +55,11 @@ class Title(BaseModel):
     name = models.CharField('Название произведения',
                             max_length=256,
                             validators=[RegexValidator])
-    year = models.PositiveSmallIntegerField('Дата создания', blank=False,
-                                            null=False)
+    year = models.PositiveSmallIntegerField(
+        validators=[MaxValueValidator(dt.datetime.now().year),
+                    MinValueValidator(0)],
+        blank=False,
+        null=False)
     description = models.TextField('Описание', max_length=1000, blank=True,
                                    null=True)
     category = models.ForeignKey(
