@@ -1,4 +1,5 @@
 import datetime as dt
+
 from django.contrib.auth import get_user_model
 from django.core.validators import (
     MaxValueValidator,
@@ -6,7 +7,6 @@ from django.core.validators import (
     RegexValidator
 )
 from django.db import models
-from django.core.exceptions import ValidationError
 
 User = get_user_model()
 
@@ -76,7 +76,7 @@ class Title(BaseModel):
         return self.name[:30]
 
     class Meta:
-        ordering = ['-year', ]
+        ordering = ['-year']
         verbose_name = "Произведение"
         verbose_name_plural = "Произведения"
 
