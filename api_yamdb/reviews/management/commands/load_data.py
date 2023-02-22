@@ -7,7 +7,6 @@ from django.db import DatabaseError, IntegrityError
 
 from api_yamdb.settings import BASE_DIR
 from reviews.models import (Title,
-                            TitleGenres,
                             Review,
                             Comment,
                             Category,
@@ -27,7 +26,7 @@ FILE_FUNC = {
     'genre': [Genre, 'genre.csv'],
     'category': [Category, 'category.csv'],
     'titles': [Title, 'titles.csv'],
-    'genre_title': [TitleGenres, 'genre_title.csv'],
+    'genre_title': [Title.genre.through, 'genre_title.csv'],
     'review': [Review, 'review.csv'],
     'comments': [Comment, 'comments.csv']
 }
@@ -49,11 +48,16 @@ def open_csv(file, model):
 
 def create_obj(reader, model):
     try:
-        model.objects.bulk_create(
-            [model(**{REPLACE_VALUE.get(k, k): v for k, v
-                      in row.items()}) for row
-             in reader]
-        )
+        if model == Title.genre.through:
+            objects = [model(title_id=i['title_id'], genre_id=i['genre_id'])
+                       for i in reader]
+            model.objects.bulk_create(objects)
+        else:
+            model.objects.bulk_create(
+                [model(**{REPLACE_VALUE.get(k, k): v for k, v
+                          in row.items()}) for row
+                 in reader]
+            )
     except IntegrityError:
         logger.error(f'- Ошибка | {model.__name__} | '
                      f'Проверьте уникальность полей '

@@ -20,6 +20,7 @@ class User(AbstractUser):
     )
     email = models.EmailField(
         'E-mail',
+        max_length=254,
         unique=True
     )
     bio = models.TextField(
@@ -48,6 +49,7 @@ class User(AbstractUser):
         return self.username
 
     class Meta:
+        ordering = ['id', ]
         constraints = [
             models.UniqueConstraint(
                 fields=['username', 'email'],
