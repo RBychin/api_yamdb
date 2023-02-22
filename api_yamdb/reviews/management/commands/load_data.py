@@ -1,4 +1,5 @@
 import csv
+import logging
 import os
 
 from django.core.management.base import BaseCommand
@@ -6,23 +7,27 @@ from django.db import DatabaseError, IntegrityError
 
 from api_yamdb.settings import BASE_DIR
 from reviews.models import (Title,
-                            #TitleGenres,
+                            TitleGenres,
                             Review,
                             Comment,
                             Category,
                             User,
                             Genre)
 
-PATH = os.path.join(BASE_DIR, 'static/data/')
-FILES = os.listdir(PATH)
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
+sh = logging.StreamHandler()
+sh.setLevel(logging.INFO)
+logger.addHandler(sh)
 
+PATH = os.path.join(BASE_DIR, 'static/data/')
 
 FILE_FUNC = {
     'users': [User, 'users.csv'],
     'genre': [Genre, 'genre.csv'],
     'category': [Category, 'category.csv'],
     'titles': [Title, 'titles.csv'],
-    #'genre_title': [TitleGenres, 'genre_title.csv'],
+    'genre_title': [TitleGenres, 'genre_title.csv'],
     'review': [Review, 'review.csv'],
     'comments': [Comment, 'comments.csv']
 }
@@ -33,11 +38,31 @@ REPLACE_VALUE = {
 }
 
 
+def open_csv(file, model):
+    try:
+        with open(f'{PATH + file}', 'r', encoding='utf-8') as r_file:
+            reader = csv.DictReader(r_file, delimiter=',')
+            create_obj(reader, model)
+    except FileNotFoundError:
+        logger.error(f'- Ошибка | {file} | Файл не найден.')
+
+
 def create_obj(reader, model):
-    model.objects.bulk_create(
-        [model(**{REPLACE_VALUE.get(k, k): v for k, v in row.items()}) for row
-         in reader]
-    )
+    try:
+        model.objects.bulk_create(
+            [model(**{REPLACE_VALUE.get(k, k): v for k, v
+                      in row.items()}) for row
+             in reader]
+        )
+    except IntegrityError:
+        logger.error(f'- Ошибка | {model.__name__} | '
+                     f'Проверьте уникальность полей '
+                     f'модели.')
+    except DatabaseError as er:
+        logger.error(f'- Ошибка | {model.__name__} | {er}.')
+    else:
+        logger.info(f'+ Успех | {model.__name__} | '
+                    f'Записей добавлено: {reader.line_num - 1}')
 
 
 class Command(BaseCommand):
@@ -45,20 +70,18 @@ class Command(BaseCommand):
             'в sqlite базу проекта Django, перед использованием,'
             'необходимо описать модели и сделать миграции.')
 
+    def add_arguments(self, parser):
+        parser.add_argument('-p', '--prefix', type=str,
+                            help='Имя файла (без расширения).', )
+
     def handle(self, *args, **options):
-        for model, file in FILE_FUNC.values():
+        prefix = options.get('prefix')
+        if prefix:
             try:
-                with open(f'{PATH + file}', 'r', encoding="utf-8") as r_file:
-                    reader = csv.DictReader(r_file, delimiter=',')
-                    try:
-                        create_obj(reader, model)
-                    except IntegrityError:
-                        print(f'- Ошибка | {file} | '
-                              f'Проверьте уникальность полей.')
-                    except DatabaseError as er:
-                        print(f'- Ошибка | {file} | {er}.')
-                    else:
-                        print(f'+ Успех | {file} | '
-                              f'Записей добавлено: {reader.line_num - 1}')
-            except FileNotFoundError:
-                print(f'- Ошибка | {file} | Файл не найден.')
+                model, file = FILE_FUNC.get(prefix)
+                open_csv(file, model)
+            except TypeError:
+                logger.error(f'- Ошибка | Файл "{prefix}.csv" не найден в {PATH}.')
+        else:
+            for model, file in FILE_FUNC.values():
+                open_csv(file, model)
