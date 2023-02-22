@@ -27,7 +27,8 @@ class ReviewSerializer(serializers.ModelSerializer):
     def validate(self, data):
         user, title = (self.context.get('request').user,
                        self.context.get('title'))
-        if Review.objects.filter(title=title, author=user).exists():
+        if (Review.objects.filter(title=title, author=user).exists()
+                and self.context.get('request').method == 'POST'):
             raise serializers.ValidationError(
                 'Вы уже оставили отзыв на это произведение.'
             )
@@ -38,10 +39,10 @@ class CommentSerializer(serializers.ModelSerializer):
     author = serializers.SlugRelatedField(
         read_only=True, slug_field='username'
     )
-    review = serializers.PrimaryKeyRelatedField(read_only=True)
+    # review = serializers.PrimaryKeyRelatedField(read_only=True)
 
     class Meta:
-        fields = '__all__'
+        fields = ('id', 'text', 'author', 'pub_date')
         model = Comment
 
 
