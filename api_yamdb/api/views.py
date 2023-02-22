@@ -11,11 +11,11 @@ from .permissions import (IsAuthorOrReadOnly,
                           IsAdminOrReadOnly,
                           IsModeratorOrReadOnly)
 from .serializers import (
-    ReviewSerializer, 
-    CommentSerializer, 
+    ReviewSerializer,
+    CommentSerializer,
     TitleSerializer,
     GenreSerializer,
-    CategorySerializer,
+    CategorySerializer, TitlePostSerializer,
 )
 
 
@@ -71,7 +71,6 @@ class TitleViewSet(ModelViewSet):
     queryset = Title.objects.annotate(
         rating=Avg('reviews__score')
     ).all()
-    permission_classes = (IsAdminOrReadOnly,)
     filter_backends = (filters.SearchFilter,)
     search_fields = ('genre__slug',)
 
