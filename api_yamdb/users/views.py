@@ -19,7 +19,7 @@ User = get_user_model()
 
 
 class UserViewSet(ModelViewSet):
-    # lookup_field = 'username'
+    lookup_field = 'username'
     queryset = User.objects.all()
     http_method_names = ['get', 'post']
     serializer_class = UserSerializer
@@ -31,8 +31,8 @@ class UserViewSet(ModelViewSet):
             url_path=r'(?P<username>^[\w.@+-]+)')
     def user_by_username(self, request, username):
         user = get_object_or_404(User, username=username)
-        serializer = UserSerializer(data=request.data)
-    #    serializer = self.get_serializer(user)
+    #    serializer = UserSerializer(data=request.data)
+        serializer = self.get_serializer(user)
         serializer.is_valid(raise_exception=True)
         return Response(serializer.data)
 
@@ -43,7 +43,7 @@ class UserViewSet(ModelViewSet):
         if request.method == 'get':
             serializer = self.get_serializer(owner)
             return Response(serializer.data)
-      #  serializer = UserSerializer(data=request.data)
+    #    serializer = UserSerializer(data=request.data, partial=True)
         serializer = self.get_serializer(
             owner,
             data=request.data,
