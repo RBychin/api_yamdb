@@ -72,7 +72,7 @@ class TitleViewSet(ModelViewSet):
     permission_classes = [IsAdminOrReadOnly]
     queryset = Title.objects.annotate(
         rating=Avg('reviews__score')
-    ).all()
+    ).all().order_by('-year')
     filter_backends = [DjangoFilterBackend, ]
     filterset_class = CustomFilter
 

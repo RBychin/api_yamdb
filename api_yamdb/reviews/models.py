@@ -76,7 +76,6 @@ class Title(BaseModel):
         return self.name[:30]
 
     class Meta:
-        ordering = ['-year']
         verbose_name = "Произведение"
         verbose_name_plural = "Произведения"
 
