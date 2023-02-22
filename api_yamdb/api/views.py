@@ -25,9 +25,9 @@ User = get_user_model()
 class ReviewViewSet(ModelViewSet):
     serializer_class = ReviewSerializer
     permission_classes = [IsAuthenticatedOrReadOnly,
-                          IsAdminOrReadOnly,
-                          IsModeratorOrReadOnly,
-                          IsAuthorOrReadOnly]
+                          IsAuthorOrReadOnly |
+                          IsAdminOrReadOnly |
+                          IsModeratorOrReadOnly]
 
     def get_serializer_context(self):
         context = super(ReviewViewSet, self).get_serializer_context()
@@ -50,9 +50,9 @@ class ReviewViewSet(ModelViewSet):
 class CommentViewSet(ModelViewSet):
     serializer_class = CommentSerializer
     permission_classes = [IsAuthenticatedOrReadOnly,
-                          IsAdminOrReadOnly,
-                          IsModeratorOrReadOnly,
-                          IsAuthorOrReadOnly]
+                          IsAuthorOrReadOnly |
+                          IsAdminOrReadOnly |
+                          IsModeratorOrReadOnly]
 
     def get_queryset(self):
         review = get_object_or_404(Review, pk=self.kwargs.get('review_id'))
