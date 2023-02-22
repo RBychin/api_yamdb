@@ -21,14 +21,17 @@ User = get_user_model()
 class UserViewSet(ModelViewSet):
     lookup_field = 'username'
     queryset = User.objects.all()
-    http_method_names = ['get', 'post']
+    http_method_names = ['get', 'post', 'patch', 'delete']
     serializer_class = UserSerializer
     permission_classes = (IsAdminUser,)
     filter_backends = (SearchFilter,)
     search_fields = ('username',)
 
-    @action(detail=False, methods=['get', 'patch', 'delete'],
-            url_path=r'(?P<username>^[\w.@+-]+)')
+    @action(
+        detail=False,
+        methods=(['get', 'patch']),
+        permission_classes=[IsAuthenticated],
+    )
     def user_by_username(self, request, username):
         user = get_object_or_404(User, username=username)
     #    serializer = UserSerializer(data=request.data)
