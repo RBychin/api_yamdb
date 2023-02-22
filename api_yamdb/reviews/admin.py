@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Review, Comment, Category, Title, Genre, TitleGenres
+from .models import Review, Comment, Category, Title, Genre
 
 
 @admin.register(Title)
@@ -19,6 +19,7 @@ class TitleAdmin(admin.ModelAdmin):
     list_editable = ('year',)
     search_fields = ('name',)
     list_filter = ('category',)
+    filter_horizontal = ('genre',)
 
 
 @admin.register(Genre)
@@ -49,9 +50,6 @@ class CategoryAdmin(admin.ModelAdmin):
     empty_value_display = '-none-'
     list_editable = ('slug',)
     search_fields = ('name',)
-
-
-admin.site.register(TitleGenres)
 
 
 @admin.register(Review)
