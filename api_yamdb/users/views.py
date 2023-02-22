@@ -19,6 +19,7 @@ User = get_user_model()
 
 
 class UserViewSet(ModelViewSet):
+    # lookup_field = 'username'
     queryset = User.objects.all()
     http_method_names = ['get', 'post']
     serializer_class = UserSerializer
@@ -36,13 +37,19 @@ class UserViewSet(ModelViewSet):
         return Response(serializer.data)
 
     @action(detail=False, methods=['get', 'patch'],
-            permission_classes=[IsAuthenticated])
+            permission_classes=[IsAuthenticated],)
     def me(self, request):
-        owner = self.request.user
-        serializer = UserSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
+        owner = request.user
         if request.method == 'get':
+            serializer = self.get_serializer(owner)
             return Response(serializer.data)
+      #  serializer = UserSerializer(data=request.data)
+        serializer = self.get_serializer(
+            owner,
+            data=request.data,
+            partial=True
+        )
+        serializer.is_valid(raise_exception=True)
         serializer.save(role=owner.role)
         return Response(serializer.data)
 
@@ -90,6 +97,7 @@ def get_token(request):
     if request.data.get('confirmation_code') == user.confirmation_code:  #
         refresh = RefreshToken.for_user(user)
         token = str(refresh.access_token)
+        user.token = token
         return Response(data={'token': token})
     return Response(
         {'confirmation_code': 'Код подтверждения не совпадает!'},

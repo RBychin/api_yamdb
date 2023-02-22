@@ -41,5 +41,5 @@ urlpatterns = [
         'v1/auth/token/',
         get_token,
         name='get_token',
-    )
+    ),
 ]
