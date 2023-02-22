@@ -22,13 +22,13 @@ User = get_user_model()
 
 
 class UserViewSet(ModelViewSet):
-    lookup_field = 'username'
     queryset = User.objects.all()
-    http_method_names = ['get', 'post', 'patch', 'delete']
-    serializer_class = UserSerializer
     permission_classes = (IsAdminUser,)
+    serializer_class = UserSerializer
     filter_backends = (SearchFilter,)
+    lookup_field = 'username'
     search_fields = ('username',)
+    http_method_names = ['get', 'post', 'patch', 'delete']
 
     @action(
         detail=False,
@@ -95,19 +95,19 @@ def sign_up(request):
     return Response(request.data)
 
 
-@api_view(["POST"])
+@api_view(['POST'])
 @permission_classes([AllowAny])
 def get_token(request):
     serializer = GettingTokenSerializer(data=request.data)
     serializer.is_valid(raise_exception=True)
-    user = get_object_or_404(
-        User,
-        username=serializer.validated_data["username"]
+    username = serializer.validated_data["username"]
+    user = get_object_or_404(User, username=username)
+    if request.data.get('confirmation_code') == user.confirmation_code:
+        refresh = RefreshToken.for_user(user)
+        token = str(refresh.access_token)
+        user.token = token
+        return Response(data={'token': token})
+    return Response(
+        {'confirmation_code': 'Код подтверждения не совпадает!'},
+        status=HTTP_400_BAD_REQUEST
     )
-    if default_token_generator.check_token(
-        user, serializer.validated_data["confirmation_code"]
-    ):
-        token = AccessToken.for_user(user)
-        return Response({"token": str(token)}, status=status.HTTP_200_OK)
-
-    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
