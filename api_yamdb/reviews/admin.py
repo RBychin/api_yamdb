@@ -52,9 +52,6 @@ class CategoryAdmin(admin.ModelAdmin):
     search_fields = ('name',)
 
 
-admin.site.register(TitleGenres)
-
-
 @admin.register(Review)
 class ReviewAdmin(admin.ModelAdmin):
     list_display = ('author', 'text', 'score', 'pub_date', 'title')
