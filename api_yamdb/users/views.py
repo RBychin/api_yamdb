@@ -2,14 +2,17 @@ from secrets import randbelow
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
+from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import send_mail
 from django.shortcuts import get_object_or_404
+from rest_framework import status
 from rest_framework.decorators import action, api_view, permission_classes
 from rest_framework.filters import SearchFilter
-from rest_framework.permissions import AllowAny, IsAdminUser, IsAuthenticated
+from .permissions import IsAdminUser
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
-from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.tokens import RefreshToken, AccessToken
 from rest_framework.status import HTTP_400_BAD_REQUEST
 
 from users.serializers import (GettingTokenSerializer, SignUpSerializer,
@@ -29,7 +32,7 @@ class UserViewSet(ModelViewSet):
 
     @action(
         detail=False,
-        methods=(['get', 'patch']),
+        methods=(['get', 'patch', 'delete']),
         permission_classes=[IsAuthenticated],
     )
     def user_by_username(self, request, username):
@@ -39,8 +42,11 @@ class UserViewSet(ModelViewSet):
         serializer.is_valid(raise_exception=True)
         return Response(serializer.data)
 
-    @action(detail=False, methods=['get', 'patch'],
-            permission_classes=[IsAuthenticated],)
+    @action(
+        detail=False,
+        methods=(['get', 'patch']),
+        permission_classes=[IsAuthenticated],
+    )
     def me(self, request):
         owner = request.user
         if request.method == 'get':
@@ -57,7 +63,7 @@ class UserViewSet(ModelViewSet):
         return Response(serializer.data)
 
 
-@api_view(['POST'])
+@api_view(['post'])
 @permission_classes([AllowAny])
 def sign_up(request):
     username = request.data.get('username')
@@ -89,20 +95,19 @@ def sign_up(request):
     return Response(request.data)
 
 
-@api_view(['POST'])
+@api_view(["POST"])
 @permission_classes([AllowAny])
 def get_token(request):
-    username = request.data.get('username')
-    user = get_object_or_404(User, username=username)
     serializer = GettingTokenSerializer(data=request.data)
     serializer.is_valid(raise_exception=True)
-#    data = serializer.validated_data  #
-    if request.data.get('confirmation_code') == user.confirmation_code:  #
-        refresh = RefreshToken.for_user(user)
-        token = str(refresh.access_token)
-        user.token = token
-        return Response(data={'token': token})
-    return Response(
-        {'confirmation_code': 'Код подтверждения не совпадает!'},
-        status=HTTP_400_BAD_REQUEST
+    user = get_object_or_404(
+        User,
+        username=serializer.validated_data["username"]
     )
+    if default_token_generator.check_token(
+        user, serializer.validated_data["confirmation_code"]
+    ):
+        token = AccessToken.for_user(user)
+        return Response({"token": str(token)}, status=status.HTTP_200_OK)
+
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

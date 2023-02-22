@@ -24,12 +24,11 @@ class SignUpSerializer(serializers.ModelSerializer):
 
 
 class GettingTokenSerializer(serializers.Serializer):
-    class Meta:
-        model = User
-        fields = ('username', 'confirmation_code', 'token')
+    username = serializers.CharField(max_length=150, required=True)
+    confirmation_code = serializers.CharField(required=True)
 
-    def create(self, validated_data):
-        return User.objects.get_or_create(**validated_data)
+    class Meta:
+        fields = ('username', 'token')
 
 #   def validate_confirmation_code(self, value):
 #       if self.context['request'].user.confirmation_code != value:

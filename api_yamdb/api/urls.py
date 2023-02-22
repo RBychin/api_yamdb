@@ -32,14 +32,6 @@ v1_router.register(
 
 urlpatterns = [
     path('v1/', include(v1_router.urls)),
-    path(
-        'v1/auth/signup/',
-        sign_up,
-        name='sign_up',
-    ),
-    path(
-        'v1/auth/token/',
-        get_token,
-        name='get_token',
-    ),
+    path('v1/auth/signup/', sign_up, name='sign_up'),
+    path('v1/auth/token/', get_token, name='get_token'),
 ]
