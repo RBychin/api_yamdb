@@ -28,6 +28,7 @@ class Genre(models.Model):
         return self.name[:30]
 
     class Meta:
+        ordering = ('name',)
         verbose_name = "Жанр"
         verbose_name_plural = "Жанры"
 
@@ -46,6 +47,7 @@ class Category(models.Model):
         return self.name[:30]
 
     class Meta:
+        ordering = ('name',)
         verbose_name = "Категория"
         verbose_name_plural = "Категории"
 
@@ -70,6 +72,7 @@ class Title(BaseModel):
         return self.name[:30]
 
     class Meta:
+        ordering = ['-year', ]
         verbose_name = "Произведение"
         verbose_name_plural = "Произведения"
 
@@ -90,7 +93,6 @@ class CreatedModel(BaseModel):
 
     class Meta:
         abstract = True
-        ordering = ["-pub_date"]
 
 
 class Review(CreatedModel):
@@ -118,6 +120,7 @@ class Review(CreatedModel):
         return self.text[:30]
 
     class Meta:
+        ordering = ['-pub_date', ]
         constraints = [
             models.UniqueConstraint(
                 fields=['author', 'title'],
@@ -145,5 +148,6 @@ class Comment(CreatedModel):
         return self.text[:30]
 
     class Meta:
+        ordering = ['-pub_date', ]
         verbose_name = "Комментарий"
         verbose_name_plural = "Комментарии"
