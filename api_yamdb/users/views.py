@@ -30,17 +30,8 @@ class UserViewSet(ModelViewSet):
 
     @action(
         detail=False,
-        methods=(['get', 'patch', 'delete']),
-    )
-    def user_by_username(self, request, username):
-        user = get_object_or_404(User, username=username)
-        serializer = self.get_serializer(user)
-        serializer.is_valid(raise_exception=True)
-        return Response(serializer.data)
-
-    @action(
-        detail=False,
         methods=(['get', 'patch']),
+        permission_classes=[IsAuthenticated]
     )
     def me(self, request):
         owner = request.user
