@@ -1,8 +1,8 @@
 from rest_framework import permissions
 
 
-# Соблюдаю принципы SOLID, надеюсь не переборщил.
 class IsAuthorOrReadOnly(permissions.BasePermission):
+    """Доступ разрешен только автору объекта."""
 
     def has_object_permission(self, request, view, obj):
         return (request.method in permissions.SAFE_METHODS
@@ -10,6 +10,7 @@ class IsAuthorOrReadOnly(permissions.BasePermission):
 
 
 class IsAdminOrReadOnly(permissions.BasePermission):
+    """Доступ разрешен Администратору."""
 
     def has_permission(self, request, view):
         return (request.method in permissions.SAFE_METHODS
@@ -24,6 +25,7 @@ class IsAdminOrReadOnly(permissions.BasePermission):
 
 
 class IsModeratorOrReadOnly(permissions.BasePermission):
+    """Доступ разрешен Модератору."""
 
     def has_object_permission(self, request, view, obj):
         return (request.method in permissions.SAFE_METHODS
@@ -31,6 +33,7 @@ class IsModeratorOrReadOnly(permissions.BasePermission):
 
 
 class IsUserOrReadOnly(permissions.BasePermission):
+    """Доступ разрешен Пользователю (user)."""
 
     def has_object_permission(self, request, view, obj):
         return (request.method in permissions.SAFE_METHODS

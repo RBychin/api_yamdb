@@ -12,6 +12,8 @@ ROLE_CHOICES = (
 
 
 class User(AbstractUser):
+    """Модель пользователя."""
+
     username = models.CharField(
         'Ник',
         unique=True,

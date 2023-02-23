@@ -18,7 +18,9 @@ class CustomFilter1(filters.FilterSet):
 
 class CustomFilter2(filters.FilterSet):
     year = filters.Filter()
-    category = CharFilterInFilter(field_name='category__slug', lookup_expr='in')
+    category = CharFilterInFilter(
+        field_name='category__slug', lookup_expr='in'
+    )
 
     class Meta:
         model = Title

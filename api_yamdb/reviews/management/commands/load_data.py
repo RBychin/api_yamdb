@@ -85,7 +85,9 @@ class Command(BaseCommand):
                 model, file = FILE_FUNC.get(prefix)
                 open_csv(file, model)
             except TypeError:
-                logger.error(f'- Ошибка | Файл "{prefix}.csv" не найден в {PATH}.')
+                logger.error(
+                    f'- Ошибка | Файл "{prefix}.csv" не найден в {PATH}.'
+                )
         else:
             for model, file in FILE_FUNC.values():
                 open_csv(file, model)

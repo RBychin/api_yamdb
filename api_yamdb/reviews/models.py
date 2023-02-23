@@ -18,7 +18,8 @@ class BaseModel(models.Model):
         abstract = True
 
 
-class Genre(models.Model):
+class Genre(BaseModel):
+    """Модель жанра."""
     name = models.CharField('Название жанра', max_length=256, unique=True)
     slug = models.SlugField('Краткое имя жанра',
                             max_length=50,
@@ -34,7 +35,8 @@ class Genre(models.Model):
         verbose_name_plural = "Жанры"
 
 
-class Category(models.Model):
+class Category(BaseModel):
+    """Модель Категории."""
     name = models.CharField('Название категории',
                             max_length=256,
                             unique=True,
@@ -54,6 +56,7 @@ class Category(models.Model):
 
 
 class Title(BaseModel):
+    """Модель произведения."""
     name = models.CharField('Название произведения',
                             max_length=256,
                             validators=[RegexValidator])
@@ -99,7 +102,7 @@ class CreatedModel(BaseModel):
 
 
 class Review(CreatedModel):
-    """Модель отзывов."""
+    """Модель отзыва."""
     title = models.ForeignKey(
         Title, on_delete=models.CASCADE,
         related_name='reviews',
@@ -135,7 +138,7 @@ class Review(CreatedModel):
 
 
 class Comment(CreatedModel):
-    """Модель комментариев."""
+    """Модель комментария."""
     review = models.ForeignKey(
         Review, on_delete=models.CASCADE,
         related_name='comments',
