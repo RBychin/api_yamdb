@@ -31,11 +31,9 @@ class UserViewSet(ModelViewSet):
     @action(
         detail=False,
         methods=(['get', 'patch', 'delete']),
-        permission_classes=[IsAuthenticated],
     )
     def user_by_username(self, request, username):
         user = get_object_or_404(User, username=username)
-    #    serializer = UserSerializer(data=request.data)
         serializer = self.get_serializer(user)
         serializer.is_valid(raise_exception=True)
         return Response(serializer.data)
@@ -43,14 +41,12 @@ class UserViewSet(ModelViewSet):
     @action(
         detail=False,
         methods=(['get', 'patch']),
-        permission_classes=[IsAuthenticated],
     )
     def me(self, request):
         owner = request.user
         if request.method == 'get':
             serializer = self.get_serializer(owner)
             return Response(serializer.data)
-    #    serializer = UserSerializer(data=request.data, partial=True)
         serializer = self.get_serializer(
             owner,
             data=request.data,
