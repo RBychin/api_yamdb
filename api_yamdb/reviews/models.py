@@ -64,6 +64,7 @@ class Title(BaseModel):
                             max_length=256,
                             validators=[RegexValidator])
     year = models.PositiveSmallIntegerField(
+        'Год',
         validators=[MaxValueValidator(dt.datetime.now().year),
                     MinValueValidator(0)],
         blank=False,

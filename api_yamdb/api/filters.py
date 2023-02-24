@@ -4,7 +4,7 @@ from reviews.models import Title
 
 
 class CustomFilter(filters.FilterSet):
-    name = filters.Filter()
+    name = filters.Filter(lookup_expr='icontains')
     genre = filters.BaseInFilter(
         field_name='genre__slug',
         lookup_expr='in'
