@@ -8,6 +8,8 @@ from django.core.validators import (
 )
 from django.db import models
 
+from api_yamdb.settings import RATING_MAX, RATING_MIN
+
 User = get_user_model()
 
 
@@ -120,8 +122,8 @@ class Review(CreatedModel):
     score = models.IntegerField(
         verbose_name='Оценка произведения',
         validators=[
-            MaxValueValidator(10),
-            MinValueValidator(1),
+            MaxValueValidator(RATING_MAX),
+            MinValueValidator(RATING_MIN),
         ],
         blank=False,
     )

@@ -13,7 +13,6 @@ User = get_user_model()
 
 
 class ReviewSerializer(serializers.ModelSerializer):
-
     author = serializers.SlugRelatedField(
         read_only=True, slug_field='username'
     )
@@ -25,8 +24,9 @@ class ReviewSerializer(serializers.ModelSerializer):
     def validate(self, data):
         user, title = (self.context.get('request').user,
                        self.context.get('title'))
-        if (Review.objects.filter(title=title, author=user).exists()
-                and self.context.get('request').method == 'POST'):
+        if (self.context.get('request').method == 'POST') and \
+                Review.objects.filter(title_id=title.id,
+                                      author_id=user.id).exists():
             raise serializers.ValidationError(
                 'Вы уже оставили отзыв на это произведение.'
             )
@@ -34,7 +34,6 @@ class ReviewSerializer(serializers.ModelSerializer):
 
 
 class CommentSerializer(serializers.ModelSerializer):
-
     author = serializers.SlugRelatedField(
         read_only=True, slug_field='username'
     )
@@ -45,7 +44,6 @@ class CommentSerializer(serializers.ModelSerializer):
 
 
 class CategorySerializer(serializers.ModelSerializer):
-
     class Meta:
         model = Category
         exclude = ('id',)
@@ -56,7 +54,6 @@ class CategorySerializer(serializers.ModelSerializer):
 
 
 class GenreSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = Genre
         exclude = ('id',)
@@ -67,7 +64,6 @@ class GenreSerializer(serializers.ModelSerializer):
 
 
 class TitleSerializer(serializers.ModelSerializer):
-
     genre = GenreSerializer(many=True)
     rating = serializers.IntegerField(read_only=True)
     category = CategorySerializer(many=False)
@@ -79,7 +75,6 @@ class TitleSerializer(serializers.ModelSerializer):
 
 
 class TitlePostSerializer(TitleSerializer):
-
     genre = serializers.SlugRelatedField(
         queryset=Genre.objects.all(),
         slug_field='slug',
