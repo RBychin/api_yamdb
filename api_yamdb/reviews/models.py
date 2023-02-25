@@ -8,6 +8,8 @@ from django.core.validators import (
 )
 from django.db import models
 
+from api_yamdb.settings import RATING_MAX, RATING_MIN
+
 User = get_user_model()
 
 
@@ -20,7 +22,10 @@ class BaseModel(models.Model):
 
 class Genre(BaseModel):
     """Модель жанра."""
-    name = models.CharField('Название жанра', max_length=256, unique=True)
+    name = models.CharField('Название жанра',
+                            max_length=256,
+                            unique=True,
+                            validators=[RegexValidator])
     slug = models.SlugField('Краткое имя жанра',
                             max_length=50,
                             unique=True,
@@ -61,6 +66,7 @@ class Title(BaseModel):
                             max_length=256,
                             validators=[RegexValidator])
     year = models.PositiveSmallIntegerField(
+        'Год',
         validators=[MaxValueValidator(dt.datetime.now().year),
                     MinValueValidator(0)],
         blank=False,
@@ -116,8 +122,8 @@ class Review(CreatedModel):
     score = models.IntegerField(
         verbose_name='Оценка произведения',
         validators=[
-            MaxValueValidator(10),
-            MinValueValidator(1),
+            MaxValueValidator(RATING_MAX),
+            MinValueValidator(RATING_MIN),
         ],
         blank=False,
     )
