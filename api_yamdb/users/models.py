@@ -4,15 +4,18 @@ from django.db import models
 
 from users.validators import validate_username
 
-ROLE_CHOICES = (
-    ('user', 'Пользователь'),
-    ('moderator', 'Модератор'),
-    ('admin', 'Администратор'),
-)
-
 
 class User(AbstractUser):
     """Модель пользователя."""
+    USER = 'user'
+    MODERATOR = 'moderator'
+    ADMIN = 'admin'
+
+    ROLE_CHOICES = (
+        (USER, 'Пользователь'),
+        (MODERATOR, 'Модератор'),
+        (ADMIN, 'Администратор'),
+    )
 
     username = models.CharField(
         'Ник',
@@ -22,7 +25,6 @@ class User(AbstractUser):
     )
     email = models.EmailField(
         'E-mail',
-        max_length=254,
         unique=True
     )
     bio = models.TextField(
@@ -34,7 +36,7 @@ class User(AbstractUser):
         max_length=settings.ROLE_MAX_LEN,
         choices=ROLE_CHOICES,
         help_text='Назначьте роль пользователя',
-        default='user',
+        default=USER,
     )
     confirmation_code = models.CharField(
         'Код подтверждения',
@@ -52,9 +54,3 @@ class User(AbstractUser):
 
     class Meta:
         ordering = ['id', ]
-        constraints = [
-            models.UniqueConstraint(
-                fields=['username', 'email'],
-                name='unique_user_email'
-            )
-        ]
