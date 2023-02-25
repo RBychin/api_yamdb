@@ -20,7 +20,10 @@ class BaseModel(models.Model):
 
 class Genre(BaseModel):
     """Модель жанра."""
-    name = models.CharField('Название жанра', max_length=256, unique=True)
+    name = models.CharField('Название жанра',
+                            max_length=256,
+                            unique=True,
+                            validators=[RegexValidator])
     slug = models.SlugField('Краткое имя жанра',
                             max_length=50,
                             unique=True,
@@ -61,6 +64,7 @@ class Title(BaseModel):
                             max_length=256,
                             validators=[RegexValidator])
     year = models.PositiveSmallIntegerField(
+        'Год',
         validators=[MaxValueValidator(dt.datetime.now().year),
                     MinValueValidator(0)],
         blank=False,
