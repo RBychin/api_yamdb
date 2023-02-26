@@ -14,7 +14,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 
 from users.serializers import (GettingTokenSerializer, SignUpSerializer,
                                UserSerializer)
-from .permissions import IsAdminUser
+from users.permissions import IsAdminUser
 
 User = get_user_model()
 
@@ -53,31 +53,31 @@ class UserViewSet(ModelViewSet):
 def sign_up(request):
     username = request.data.get('username')
     email = request.data.get('email')
-    if User.objects.filter(username=username, email=email).exists():
-        user, created = User.objects.get_or_create(username=username)
-        if not created:
-            confirmation_code = randbelow(settings.CONF_CODE_RANGE_UPP_LIMIT)
-            user.confirmation_code = confirmation_code
-            send_mail(
-                subject='Новый код подтверждения',
-                message=f'Новый код подтверждения - {str(confirmation_code)} ',
-                from_email=None,
-                recipient_list=(email,)
-            )
-            user.save()
-            return Response('Код подтверждения обновлен')
-    serializer = SignUpSerializer(data=request.data)
-    serializer.is_valid(raise_exception=True)
-    confirmation_code = randbelow(settings.CONF_CODE_RANGE_UPP_LIMIT)
-    email = serializer.validated_data.get('email')
-    send_mail(
-        subject='Код подтверждения',
-        message=f'Код подтверждения - {str(confirmation_code)} ',
-        from_email=None,
-        recipient_list=(email,)
-    )
-    serializer.save(confirmation_code=confirmation_code)
-    return Response(request.data)
+    try:
+        user = User.objects.get(username=username, email=email)
+        confirmation_code = randbelow(settings.CONF_CODE_RANGE_UPP_LIMIT)
+        user.confirmation_code = confirmation_code
+        send_mail(
+            subject='Новый код подтверждения',
+            message=f'Новый код подтверждения - {str(confirmation_code)} ',
+            from_email=None,
+            recipient_list=(email,)
+        )
+        user.save()
+        return Response('Код подтверждения обновлен')
+    except User.DoesNotExist:
+        serializer = SignUpSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        confirmation_code = randbelow(settings.CONF_CODE_RANGE_UPP_LIMIT)
+        email = serializer.validated_data.get('email')
+        send_mail(
+            subject='Код подтверждения',
+            message=f'Код подтверждения - {str(confirmation_code)} ',
+            from_email=None,
+            recipient_list=(email,)
+        )
+        serializer.save(confirmation_code=confirmation_code)
+        return Response(request.data)
 
 
 @api_view(['POST'])
